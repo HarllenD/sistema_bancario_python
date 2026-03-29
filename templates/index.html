@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Banco Digital</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<div class="navbar">
+    <h2> Banco Digital</h2>
+    <span>Bem-vindo</span>
+</div>
+
+<div class="container">
+
+{% with messages = get_flashed_messages() %}
+  {% for msg in messages %}
+    <div class="msg">{{ msg }}</div>
+  {% endfor %}
+{% endwith %}
+
+<div class="dashboard">
+    <div class="dash-card">
+        <h3>Saldo Total</h3>
+        <p>R$ {{ "%.2f"|format(total) }}</p>
+    </div>
+
+    <div class="dash-card">
+        <h3>Total de Contas</h3>
+        <p>{{ qtd }}</p>
+    </div>
+</div>
+
+
+<div class="grid">
+
+   
+    <div>
+        <h3>Contas</h3>
+
+        {% for conta in contas %}
+        <div class="card">
+            <p><b>ID:</b> {{ conta[0] }}</p>
+            <p><b>Nome:</b> {{ conta[1] }}</p>
+            <p><b>Saldo:</b> R$ {{ "%.2f"|format(conta[2]) }}</p>
+        </div>
+        {% endfor %}
+    </div>
+
+   
+    <div>
+
+        <div class="form-card">
+            <h3>Criar Conta</h3>
+            <form action="/criar" method="post">
+                <input type="text" name="nome" placeholder="Nome" required>
+                <button>Criar</button>
+            </form>
+        </div>
+
+        <div class="form-card">
+            <h3>Depositar</h3>
+            <form action="/depositar" method="post">
+                <input type="number" name="id" placeholder="ID" required>
+                <input type="number" name="valor" placeholder="Valor" required>
+                <button>Depositar</button>
+            </form>
+        </div>
+
+        <div class="form-card">
+            <h3>Sacar</h3>
+            <form action="/sacar" method="post">
+                <input type="number" name="id" placeholder="ID" required>
+                <input type="number" name="valor" placeholder="Valor" required>
+                <button>Sacar</button>
+            </form>
+        </div>
+
+    </div>
+
+</div>
+
+<div style="margin-top:20px;">
+    <canvas id="grafico"></canvas>
+</div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+const nomes = JSON.parse('{{ nomes | tojson | safe }}');
+const saldos = JSON.parse('{{ saldos | tojson | safe }}');
+
+const ctx = document.getElementById('grafico').getContext('2d');
+
+new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: nomes,
+        datasets: [{
+            label: 'Saldo por Conta',
+            data: saldos
+        }]
+    }
+});
+</script>
+
+</body>
+</html>
